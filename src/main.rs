@@ -5,9 +5,9 @@ use std::process;
 use sbp::Sbp;
 
 fn average_cn0(sat: u8) -> Result<(), Box<dyn Error>> {
-    let messages = sbp::iter_messages(io::stdin());
     let mut acc: u64 = 0;
     let mut count: u64 = 0;
+    let messages = sbp::iter_messages(io::stdin());
     for msg in messages {
         let msg = msg?;
         if let Sbp::MsgObs(msg_obs) = msg {
