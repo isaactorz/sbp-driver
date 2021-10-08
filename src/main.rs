@@ -12,8 +12,7 @@ fn average_cn0(sat: u8) -> Result<(), Box<dyn Error>> {
         let msg = msg?;
         if let Sbp::MsgObs(msg_obs) = msg {
             for ob in msg_obs.obs {
-                let sid = &ob.sid;
-                if sat == sid.sat {
+                if sat == ob.sid.sat {
                     acc += ob.cn0 as u64;
                     count += 1;
                 }
