@@ -2,20 +2,26 @@ use std::error::Error;
 use std::io;
 use std::process;
 
-use sbp::{SbpEncoder, SbpMessage};
+use sbp::Sbp;
 
-fn example(sender_id: u16) -> Result<(), Box<dyn Error>> {
+fn example() -> Result<(), Box<dyn Error>> {
     let messages = sbp::iter_messages(io::stdin());
-    let messages = messages.filter_map(|msg| match msg {
-        Ok(msg) if msg.sender_id() == Some(sender_id) => Some(msg),
-        _ => None,
-    });
-    SbpEncoder::new(io::stdout()).send_all(messages)?;
+    for msg in messages {
+        let msg = msg?;
+        if let Sbp::MsgObs(msg_obs) = msg {
+            for ob in msg_obs.obs {
+                let cn0 = ob.cn0;
+                let sid = &ob.sid;
+                let sat = sid.sat;
+                eprintln!("SatID: {}, cn0: {}", sat, cn0);
+            }
+        }
+    }
     Ok(())
 }
 
 fn main() {
-    if let Err(err) = example(31183) {
+    if let Err(err) = example() {
         eprintln!("error: {}", err);
         process::exit(1);
     }
